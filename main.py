@@ -137,13 +137,16 @@ def export_onnx(model, path, batch_size, seq_len):
 
 def run(Model, dataDir):
     # set corpus
+    print('set corpus...')
     corpus = data.Corpus(dataDir)
     eval_batch_size = 10
     train_data = batchify(corpus.train, batch_size)
     val_data = batchify(corpus.valid, eval_batch_size)
     test_data = batchify(corpus.test, eval_batch_size)
+    print('done')
 
     # set model
+    print('set model...')
     ntokens = len(corpus.dictionary)
     model = Model(modelType,
                   ntokens,
@@ -153,12 +156,14 @@ def run(Model, dataDir):
                   dropout,
                   tied).to(device)
     criterion = nn.CrossEntropyLoss()
+    print('done')
 
     # Loop over epochs.
     best_val_loss = None
 
     # At any point you can hit Ctrl + C to break out of training early.
     try:
+        print('start training')
         for epoch in range(1, epochs+1):
             epoch_start_time = time.time()
             train(epoch, model, criterion, train_data, corpus)
