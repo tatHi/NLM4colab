@@ -154,7 +154,11 @@ def run(Model, dataDir):
                   nhid,
                   nlayers,
                   dropout,
-                  tied).to(device)
+                  tied)
+    if cuda:
+        model = model.cuda()
+        # model = model.to(device)
+
     criterion = nn.CrossEntropyLoss()
     print('done')
 
