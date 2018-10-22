@@ -44,7 +44,9 @@ def batchify(data, bsz):
     data = data.narrow(0, 0, nbatch * bsz)
     # Evenly divide the data across the bsz batches.
     data = data.view(bsz, -1).t().contiguous()
-    return data.to(device)
+    if cuda:
+        data = data.cuda()
+    return data
 
 ###############################################################################
 # Training code
@@ -130,7 +132,9 @@ def export_onnx(model, path, batch_size, seq_len):
     print('The model is also exported in ONNX format at {}'.
           format(os.path.realpath(onnx_export)))
     model.eval()
-    dummy_input = torch.LongTensor(seq_len * batch_size).zero_().view(-1, batch_size).to(device)
+    dummy_input = torch.LongTensor(seq_len * batch_size).zero_().view(-1, batch_size)
+    if cuda:
+        dummy_input = dummy_input.cuda()
     hidden = model.init_hidden(batch_size)
     torch.onnx.export(model, (dummy_input, hidden), path)
 
